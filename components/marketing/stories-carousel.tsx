@@ -17,24 +17,24 @@ interface Story {
 const SAMPLE_STORIES: Story[] = [
     {
         id: '1',
-        thumbnail: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&auto=format&fit=crop', // Sarah - Professional Headshot look
+        thumbnail: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&auto=format&fit=crop', // Micaela - Professional Headshot look
         videoUrl: 'https://storage.googleapis.com/msgsndr/f0ZNnBBOAnxnYbXCHsB5/media/691b6793379d2316b471e21a.mp4',
         title: 'Full Mouth Restoration',
-        patientName: 'Sarah Jenkins',
+        patientName: 'Micaela',
     },
     {
         id: '2',
-        thumbnail: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=800&auto=format&fit=crop', // Michael - Suit/Corporate look
+        thumbnail: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=800&auto=format&fit=crop', // Moshi - Suit/Corporate look
         videoUrl: 'https://storage.googleapis.com/msgsndr/f0ZNnBBOAnxnYbXCHsB5/media/691b660c14eb6a868a001d8f.mp4',
         title: 'Executive Implants',
-        patientName: 'Michael Chen',
+        patientName: 'Moshi',
     },
     {
         id: '3',
-        thumbnail: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=800&auto=format&fit=crop', // Anna - Polished look
+        thumbnail: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=800&auto=format&fit=crop', // Moë - Polished look
         videoUrl: 'https://storage.googleapis.com/msgsndr/dq3ylOAKb1QTcAeFKnwl/media/6974750759a77b9387a9f4c8.mp4',
         title: 'Hollywood Smile',
-        patientName: 'Anna Rodriguez',
+        patientName: 'Moë',
     },
     {
         id: '4',
