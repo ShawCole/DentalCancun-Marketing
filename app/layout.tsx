@@ -50,6 +50,10 @@ export default function RootLayout({
             alt=""
           />
         </noscript>
+        <Script
+          src="https://cdn.idpixel.app/v1/idp-analytics-69dd28d658b55f8c5c273805.min.js"
+          strategy="afterInteractive"
+        />
       </head>
       <body
         className={`${playfair.variable} ${inter.variable} antialiased`}
