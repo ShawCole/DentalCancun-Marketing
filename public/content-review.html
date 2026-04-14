@@ -329,6 +329,44 @@
 
   .card-actions { display: flex; gap: 8px; }
 
+  .card-comment {
+    margin-top: 10px;
+    position: relative;
+  }
+
+  .card-comment textarea {
+    width: 100%;
+    min-height: 36px;
+    max-height: 120px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 12px;
+    line-height: 1.4;
+    resize: vertical;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+
+  .card-comment textarea::placeholder { color: var(--text-muted); }
+  .card-comment textarea:focus { border-color: var(--accent); }
+
+  .card-comment .comment-saved {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    font-size: 10px;
+    color: var(--accent-dim);
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+
+  .card-comment .comment-saved.visible { opacity: 1; }
+
   .btn-approve, .btn-deny {
     flex: 1;
     padding: 8px 0;
@@ -677,8 +715,10 @@ const ASSETS = [
 ];
 
 const decisions = {};
+const comments = {};
 let currentFilter = 'all';
 let lightboxAssetId = null;
+var commentTimers = {};
 
 function thumbUrl(id) {
   return 'https://drive.google.com/thumbnail?id=' + id + '&sz=w600';
@@ -839,6 +879,39 @@ function render() {
       actions.appendChild(denyBtn);
 
       body.appendChild(actions);
+
+      var commentWrap = document.createElement('div');
+      commentWrap.className = 'card-comment';
+
+      var textarea = document.createElement('textarea');
+      textarea.placeholder = 'Add a note\u2026';
+      textarea.value = comments[a.id] || '';
+      textarea.rows = 1;
+      textarea.addEventListener('input', (function(assetId, wrap) {
+        return function(e) {
+          comments[assetId] = e.target.value;
+          clearTimeout(commentTimers[assetId]);
+          commentTimers[assetId] = setTimeout(function() {
+            saveState();
+            var badge = wrap.querySelector('.comment-saved');
+            if (badge) {
+              badge.classList.add('visible');
+              setTimeout(function() { badge.classList.remove('visible'); }, 1200);
+            }
+          }, 500);
+        };
+      })(a.id, commentWrap));
+      // Prevent re-render from stealing focus — save on blur instead
+      textarea.addEventListener('blur', function() { saveState(); });
+      commentWrap.appendChild(textarea);
+
+      var savedBadge = document.createElement('span');
+      savedBadge.className = 'comment-saved';
+      savedBadge.textContent = 'Saved';
+      commentWrap.appendChild(savedBadge);
+
+      body.appendChild(commentWrap);
+
       card.appendChild(body);
       gridEl.appendChild(card);
     });
@@ -948,7 +1021,10 @@ document.querySelectorAll('.filter-btn').forEach(function(btn) {
 });
 
 function saveState() {
-  try { localStorage.setItem('dentalcancun-review', JSON.stringify(decisions)); } catch(e) {}
+  try {
+    localStorage.setItem('dentalcancun-review', JSON.stringify(decisions));
+    localStorage.setItem('dentalcancun-comments', JSON.stringify(comments));
+  } catch(e) {}
 }
 
 function loadState() {
@@ -958,6 +1034,11 @@ function loadState() {
       var parsed = JSON.parse(saved);
       Object.keys(parsed).forEach(function(k) { decisions[k] = parsed[k]; });
     }
+    var savedComments = localStorage.getItem('dentalcancun-comments');
+    if (savedComments) {
+      var parsedComments = JSON.parse(savedComments);
+      Object.keys(parsedComments).forEach(function(k) { comments[k] = parsedComments[k]; });
+    }
   } catch(e) {}
 }
 
@@ -966,6 +1047,7 @@ function exportDecisions() {
   ASSETS.forEach(function(a) {
     var d = decisions[a.id];
     var entry = '[' + a.section + '] ' + a.name + ' (' + a.size + ')';
+    if (comments[a.id]) entry += '\n    Note: ' + comments[a.id];
     if (d === 'approved') approved.push(entry);
     else if (d === 'denied') denied.push(entry);
     else pending.push(entry);
