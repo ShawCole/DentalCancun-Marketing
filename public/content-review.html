@@ -731,6 +731,7 @@ const INITIAL_DECISIONS = {
   "1oohkiYXMge-4rvgWHjnqs1b6Uvr-vvIl": "approved",
   "1MjT3hHV8G6CIvOcmYTBsTh_SNxe8Uq_H": "approved",
   "1V96qGKn5Vn5yesADIYeRTRgDCzC3uqK3": "approved",
+  "1N_dXie9VfidntH_dd_-Pwhd39prQHhL8": "denied",
   "1sNWJarn4j6ueSKSWqwNIesyk5YHTikGp": "denied",
   "1WaPOi4U4irNh8wOyF419f0CDFz7Zwf5J": "denied",
   "13kfcw9omFyiqnRyzlfRPTcoLh6DYDlt4": "denied",
@@ -880,7 +881,9 @@ function getSections() {
 }
 
 function isAlmost(id) {
-  return comments[id] && comments[id].toLowerCase().indexOf('almost') !== -1;
+  if (!comments[id]) return false;
+  var lower = comments[id].toLowerCase();
+  return lower.indexOf('almost') !== -1 || lower.indexOf('maybe') !== -1;
 }
 
 function matchFilter(asset) {
