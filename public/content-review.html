@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Elijah Content Review | DentalCancun</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0c0b0e;
+    --surface: #16151a;
+    --surface-2: #1e1d23;
+    --surface-3: #28272e;
+    --border: #2a2930;
+    --border-hover: #3d3c44;
+    --text: #e8e6ed;
+    --text-dim: #8b8994;
+    --text-muted: #5c5a64;
+    --accent: #c4f04d;
+    --accent-dim: #a5cc3a;
+    --approve: #4dcf8b;
+    --approve-bg: rgba(77,207,139,0.08);
+    --approve-border: rgba(77,207,139,0.25);
+    --deny: #f06c5d;
+    --deny-bg: rgba(240,108,93,0.08);
+    --deny-border: rgba(240,108,93,0.25);
+    --pending-bg: rgba(196,240,77,0.06);
+    --pending-border: rgba(196,240,77,0.15);
+    --radius: 10px;
+    --radius-lg: 16px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    z-index: 9999;
+  }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--border-hover); }
+
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(12,11,14,0.85);
+    backdrop-filter: blur(20px) saturate(1.4);
+    border-bottom: 1px solid var(--border);
+    padding: 0 40px;
+  }
+
+  .header-inner {
+    max-width: 1440px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 72px;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .logo {
+    font-family: 'Instrument Serif', serif;
+    font-size: 22px;
+    font-style: italic;
+    color: var(--accent);
+    letter-spacing: -0.02em;
+  }
+
+  .header-divider {
+    width: 1px;
+    height: 24px;
+    background: var(--border);
+  }
+
+  .header-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-dim);
+    letter-spacing: 0.02em;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .stat-pill {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    transition: all 0.2s;
+  }
+
+  .stat-pill .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+  }
+
+  .stat-pill.approved .dot { background: var(--approve); box-shadow: 0 0 8px rgba(77,207,139,0.4); }
+  .stat-pill.denied .dot { background: var(--deny); box-shadow: 0 0 8px rgba(240,108,93,0.4); }
+  .stat-pill.pending .dot { background: var(--accent); box-shadow: 0 0 8px rgba(196,240,77,0.3); }
+
+  .export-btn {
+    padding: 8px 20px;
+    border-radius: 100px;
+    border: none;
+    background: var(--accent);
+    color: var(--bg);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.01em;
+  }
+
+  .export-btn:hover { background: #d4ff5a; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(196,240,77,0.25); }
+
+  .filter-bar {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 24px 40px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .filter-btn {
+    padding: 7px 18px;
+    border-radius: 100px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .filter-btn:hover { border-color: var(--border-hover); color: var(--text); }
+  .filter-btn.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+
+  .filter-separator {
+    width: 1px;
+    height: 20px;
+    background: var(--border);
+    margin: 0 6px;
+  }
+
+  .main {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 40px 80px;
+  }
+
+  .section { margin-bottom: 48px; }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 28px;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+  }
+
+  .section-count {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+  }
+
+  .card:hover {
+    border-color: var(--border-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+  }
+
+  .card.approved { border-color: var(--approve-border); background: var(--approve-bg); }
+  .card.denied { border-color: var(--deny-border); background: var(--deny-bg); opacity: 0.6; }
+  .card.denied:hover { opacity: 1; }
+
+  .card-status {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 10;
+    padding: 4px 12px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    backdrop-filter: blur(8px);
+  }
+
+  .card.approved .card-status { background: rgba(77,207,139,0.2); color: var(--approve); border: 1px solid var(--approve-border); }
+  .card.denied .card-status { background: rgba(240,108,93,0.2); color: var(--deny); border: 1px solid var(--deny-border); }
+
+  .card-preview {
+    width: 100%;
+    aspect-ratio: 4/3;
+    background: var(--surface-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+  }
+
+  .card-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .card:hover .card-preview img { transform: scale(1.04); }
+
+  .card-preview .play-icon {
+    position: absolute;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255,255,255,0.15);
+    transition: all 0.3s;
+  }
+
+  .card:hover .card-preview .play-icon { background: rgba(0,0,0,0.8); transform: scale(1.08); }
+
+  .play-icon svg { width: 20px; height: 20px; fill: white; margin-left: 2px; }
+
+  .card-preview .type-badge {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    background: rgba(0,0,0,0.65);
+    backdrop-filter: blur(6px);
+    color: rgba(255,255,255,0.8);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .card-body { padding: 14px 16px; }
+
+  .card-name {
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 6px;
+  }
+
+  .card-meta {
+    font-size: 12px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .card-actions { display: flex; gap: 8px; }
+
+  .btn-approve, .btn-deny {
+    flex: 1;
+    padding: 8px 0;
+    border-radius: 8px;
+    border: 1px solid;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .btn-approve {
+    background: transparent;
+    border-color: var(--approve-border);
+    color: var(--approve);
+  }
+
+  .btn-approve:hover { background: var(--approve-bg); border-color: var(--approve); }
+  .card.approved .btn-approve { background: var(--approve); color: var(--bg); border-color: var(--approve); }
+
+  .btn-deny {
+    background: transparent;
+    border-color: var(--deny-border);
+    color: var(--deny);
+  }
+
+  .btn-deny:hover { background: var(--deny-bg); border-color: var(--deny); }
+  .card.denied .btn-deny { background: var(--deny); color: white; border-color: var(--deny); }
+
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(0,0,0,0.92);
+    backdrop-filter: blur(20px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+  }
+
+  .lightbox.open { display: flex; }
+
+  .lightbox-content {
+    max-width: 90vw;
+    max-height: 85vh;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .lightbox-content img, .lightbox-content iframe {
+    max-width: 90vw;
+    max-height: 80vh;
+    object-fit: contain;
+    display: block;
+  }
+
+  .lightbox-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(8px);
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1001;
+    transition: all 0.2s;
+  }
+
+  .lightbox-close:hover { background: rgba(255,255,255,0.15); }
+
+  .lightbox-info {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    border-radius: var(--radius);
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .lightbox-name { font-size: 14px; font-weight: 500; }
+
+  .lightbox-actions { display: flex; gap: 8px; }
+
+  .lightbox-actions button {
+    padding: 8px 20px;
+    border-radius: 100px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: all 0.2s;
+  }
+
+  .lightbox-approve { background: var(--approve); color: var(--bg); border: none; }
+  .lightbox-approve:hover { box-shadow: 0 4px 16px rgba(77,207,139,0.3); }
+  .lightbox-deny { background: transparent; color: var(--deny); border: 1px solid var(--deny-border); }
+  .lightbox-deny:hover { background: var(--deny-bg); }
+
+  .bulk-bar {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 24px;
+    border-radius: 100px;
+    background: var(--surface-2);
+    border: 1px solid var(--border-hover);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    backdrop-filter: blur(16px);
+  }
+
+  .bulk-bar .bulk-label { font-size: 13px; color: var(--text-dim); font-weight: 500; }
+
+  .bulk-bar button {
+    padding: 8px 20px;
+    border-radius: 100px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    letter-spacing: 0.03em;
+  }
+
+  .bulk-approve-all { background: var(--approve); color: var(--bg); }
+  .bulk-approve-all:hover { box-shadow: 0 4px 16px rgba(77,207,139,0.3); }
+  .bulk-deny-all { background: var(--deny); color: white; }
+  .bulk-reset { background: var(--surface-3); color: var(--text-dim); }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card { animation: fadeIn 0.4s ease-out both; }
+
+  @media (max-width: 768px) {
+    .header { padding: 0 20px; }
+    .filter-bar, .main { padding-left: 20px; padding-right: 20px; }
+    .grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+    .header-title { display: none; }
+    .bulk-bar { left: 20px; right: 20px; transform: none; justify-content: center; }
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <div class="header-left">
+      <div class="logo">DentalCancun</div>
+      <div class="header-divider"></div>
+      <div class="header-title">Elijah Content Review</div>
+    </div>
+    <div class="header-right">
+      <div class="stat-pill approved"><span class="dot"></span><span id="stat-approved">0</span> Approved</div>
+      <div class="stat-pill denied"><span class="dot"></span><span id="stat-denied">0</span> Denied</div>
+      <div class="stat-pill pending"><span class="dot"></span><span id="stat-pending">0</span> Pending</div>
+      <button class="export-btn" onclick="exportDecisions()">Export Decisions</button>
+    </div>
+  </div>
+</header>
+
+<div class="filter-bar">
+  <button class="filter-btn active" data-filter="all">All Assets</button>
+  <button class="filter-btn" data-filter="image">Images</button>
+  <button class="filter-btn" data-filter="video">Videos</button>
+  <div class="filter-separator"></div>
+  <button class="filter-btn" data-filter="pending">Pending</button>
+  <button class="filter-btn" data-filter="approved">Approved</button>
+  <button class="filter-btn" data-filter="denied">Denied</button>
+</div>
+
+<main class="main" id="main"></main>
+
+<div class="bulk-bar">
+  <span class="bulk-label">Bulk actions:</span>
+  <button class="bulk-approve-all" onclick="bulkAction('approved')">Approve All Visible</button>
+  <button class="bulk-deny-all" onclick="bulkAction('denied')">Deny All Visible</button>
+  <button class="bulk-reset" onclick="bulkAction(null)">Reset Visible</button>
+</div>
+
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+  <div class="lightbox-content" id="lightbox-content"></div>
+  <div class="lightbox-info">
+    <span class="lightbox-name" id="lightbox-name"></span>
+    <div class="lightbox-actions">
+      <button class="lightbox-approve" onclick="lightboxAction('approved')">Approve</button>
+      <button class="lightbox-deny" onclick="lightboxAction('denied')">Deny</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// All asset data is hardcoded from the Google Drive folder inventory - this is trusted content
+const ASSETS = [
+  {section:"EN / Pictures + Text",name:"1.png",type:"image",ext:"png",size:"1.5 MB",id:"1N_dXie9VfidntH_dd_-Pwhd39prQHhL8"},
+  {section:"EN / Pictures + Text",name:"2.png",type:"image",ext:"png",size:"896 KB",id:"1-aU5Zmwzva12hXD3dLV7tv08qqSkUPcw"},
+  {section:"EN / Pictures + Text",name:"3.png",type:"image",ext:"png",size:"2 MB",id:"1HF2qDhk8C-2PGrwlXBp0m4j6Hx7Hw1Qi"},
+  {section:"EN / Pictures + Text",name:"4.png",type:"image",ext:"png",size:"1.6 MB",id:"1sNWJarn4j6ueSKSWqwNIesyk5YHTikGp"},
+  {section:"EN / Pictures + Text",name:"5.png",type:"image",ext:"png",size:"1.3 MB",id:"1WaPOi4U4irNh8wOyF419f0CDFz7Zwf5J"},
+  {section:"EN / Pictures + Text",name:"6.png",type:"image",ext:"png",size:"1.3 MB",id:"1OtwJkfMUf62cmzUvXg_uHTqtKWx7KgCI"},
+  {section:"EN / Pictures + Text",name:"7.png",type:"image",ext:"png",size:"1.3 MB",id:"1U0fxOf84kiUlvC3wEmLP0rpiMBCcwI7O"},
+  {section:"EN / Pictures + Text",name:"8.png",type:"image",ext:"png",size:"1.8 MB",id:"13kfcw9omFyiqnRyzlfRPTcoLh6DYDlt4"},
+  {section:"EN / Pictures + Text",name:"9.png",type:"image",ext:"png",size:"1.3 MB",id:"18saq0k2j5KgfZ5EwvuZS1fXL4vDCwd4n"},
+  {section:"EN / Pictures + Text",name:"10.png",type:"image",ext:"png",size:"1.1 MB",id:"1NQNgZCBqdeg1RECZ7PSVHfJKEHkVavLZ"},
+  {section:"EN / Pictures + Text",name:"11.png",type:"image",ext:"png",size:"1.7 MB",id:"1ZgNkvE8aLae6IMJ1LlwOuT9QcTUyCIRN"},
+  {section:"EN / Pictures + Text",name:"12.png",type:"image",ext:"png",size:"1.4 MB",id:"16LIH1w1P3eyrcTOhnp1FhFr9cou8Pyq-"},
+  {section:"EN / Pictures + Text",name:"13.png",type:"image",ext:"png",size:"1.2 MB",id:"10G99Tq8jJPh9a_UwN-OrZ06K6jPt_gXP"},
+  {section:"EN / Pictures + Text",name:"14.png",type:"image",ext:"png",size:"1015 KB",id:"13QonCdgVOaMsG5RJ9swNjlV2MubxdRka"},
+  {section:"EN / Pictures + Text",name:"15.png",type:"image",ext:"png",size:"1.2 MB",id:"1KLfqjlqvtSXechut9h9UWDR4ni_W6Qs_"},
+  {section:"EN / Pictures + Text",name:"16.png",type:"image",ext:"png",size:"890 KB",id:"1cTeXtVWgD19S87_kPttDwxej7urNqt4Y"},
+  {section:"EN / Pictures + Text",name:"17.png",type:"image",ext:"png",size:"1.8 MB",id:"1TENEh2ml_4aGxozEBRiwQwvWKn2fRd1E"},
+  {section:"EN / Pictures + Text",name:"18.png",type:"image",ext:"png",size:"1 MB",id:"1HP-Uu5RfxavloHp0kKaxJ2eu_DydfdNr"},
+  {section:"EN / Pictures + Text",name:"19.png",type:"image",ext:"png",size:"1.1 MB",id:"1f9xuKS2-o-fO12pVlQJVIv_PWhQdZ2zy"},
+  {section:"EN / Pictures + Text",name:"20.png",type:"image",ext:"png",size:"1.6 MB",id:"1SsWalSkbxPOcLJUGf6YTs-Wd3GSOGD9K"},
+  {section:"EN / Pictures + Text",name:"21.png",type:"image",ext:"png",size:"1.6 MB",id:"1VaN-LlFym2W5D75sbh1Ela7F44SAlL8K"},
+  {section:"EN / Pictures + Text",name:"22.png",type:"image",ext:"png",size:"949 KB",id:"11B7Qr4Cg21XxvPdaWtWJ3zw75pIxuQpN"},
+  {section:"EN / Pictures + Text",name:"23.png",type:"image",ext:"png",size:"671 KB",id:"15JaGA0w2mkdVKUWcc7POy8WpPXQN2sDf"},
+  {section:"EN / Pictures + Text",name:"24.png",type:"image",ext:"png",size:"1.3 MB",id:"1g-1-Y32zDDNlcLC8rf-FLM4YiYHlw4F_"},
+  {section:"EN / Pictures + Text",name:"25.png",type:"image",ext:"png",size:"934 KB",id:"1HSoCvcpUjC1n9HWt5s-FoidE7VXDiOjF"},
+  {section:"EN / Text Overlays",name:"Image1.png",type:"image",ext:"png",size:"158 KB",id:"1j1b544GoFeh8di1fIJaTPbjJRFvzIYz8"},
+  {section:"EN / Text Overlays",name:"Image2.png",type:"image",ext:"png",size:"134 KB",id:"1SFSDKpX3Ds6T4VKHfJyV2HfRLpb6Zl9o"},
+  {section:"EN / Text Overlays",name:"Image3.png",type:"image",ext:"png",size:"123 KB",id:"1F8ea7kX5NHfIkZE8C4qG91r1t5Bx7UTM"},
+  {section:"EN / Text Overlays",name:"Image4.png",type:"image",ext:"png",size:"125 KB",id:"1QaKUpaTYzKGNcE1ESffL6dQT_0NUS7Qh"},
+  {section:"EN / Text Overlays",name:"Image5.png",type:"image",ext:"png",size:"124 KB",id:"1zDy8-QGRrfBuTcJRlS3Z3ohpy8E0ir7C"},
+  {section:"EN / Text Overlays",name:"Image6.png",type:"image",ext:"png",size:"125 KB",id:"10pe2DRfLD58cq4iffFW-MVulAd8daX7U"},
+  {section:"EN / Text Overlays",name:"Image7.png",type:"image",ext:"png",size:"166 KB",id:"1zflH8oMdNMYY5Qu4CcGUbm66MX1-bPOD"},
+  {section:"EN / Text Overlays",name:"Image8.png",type:"image",ext:"png",size:"92 KB",id:"1kHKVPCFsxehWvEsKvVOqTeb3cP5uzwRl"},
+  {section:"EN / Text Overlays",name:"Image9.png",type:"image",ext:"png",size:"106 KB",id:"1hJ-wJXD91ltmgqOH3EdsvpMv9K784IL3"},
+  {section:"EN / Text Overlays",name:"Image10.png",type:"image",ext:"png",size:"145 KB",id:"1GS86N_SwO47SZuEd1MehdIgU0YONtqcY"},
+  {section:"EN / Text Overlays",name:"Image11.png",type:"image",ext:"png",size:"158 KB",id:"1uT-3Ge6UacBbe5t-BGMxPh0I2pQOn7bj"},
+  {section:"EN / Text Overlays",name:"Image12.png",type:"image",ext:"png",size:"90 KB",id:"1_-nSyc8VBN2xbXQK71lnWugRAapi6p6W"},
+  {section:"EN / Text Overlays",name:"Image13.png",type:"image",ext:"png",size:"142 KB",id:"1_nCTVTdzr7Vei5bn_k4FdXSlBVCt7i0K"},
+  {section:"EN / Text Overlays",name:"Image14.png",type:"image",ext:"png",size:"98 KB",id:"1oDyngg9JevIETYMu62qaY-l6MOcscea0"},
+  {section:"EN / Text Overlays",name:"Image15.png",type:"image",ext:"png",size:"123 KB",id:"16pSy3WjIiCFI_7Z-Ie73RbbH27K6PpDL"},
+  {section:"EN / Text Overlays",name:"Image16.png",type:"image",ext:"png",size:"124 KB",id:"1EQSZuRtOMCpziRTigQfCGzra_VGijWdF"},
+  {section:"EN / Text Overlays",name:"Image17.png",type:"image",ext:"png",size:"135 KB",id:"1YHpE9V2vLYoqBZqfGTBmCQj5cj4y0js8"},
+  {section:"EN / Text Overlays",name:"Image18.png",type:"image",ext:"png",size:"138 KB",id:"1CfbuuBqcl5UhgJctoaV-WWiKWm1lYr7t"},
+  {section:"EN / Text Overlays",name:"Image19.png",type:"image",ext:"png",size:"110 KB",id:"1QgC9KFH31HXMQuKgCQ3Fq3Z6tZFRAvMS"},
+  {section:"EN / Text Overlays",name:"Image20.png",type:"image",ext:"png",size:"111 KB",id:"1heBQId1Qvj74PQL1G7cRhI3jdzfaeCeL"},
+  {section:"EN / Text Overlays",name:"Image21.png",type:"image",ext:"png",size:"111 KB",id:"1kWLvdU8_W6g6zNQCKXDpegTBfIVMKJjJ"},
+  {section:"EN / Text Overlays",name:"Image22.png",type:"image",ext:"png",size:"64 KB",id:"10Y_YvOUjlZlRyOWdmCr-EM3fonTh3i2s"},
+  {section:"EN / Videos",name:"A Life-Changing Transformation v1.mp4",type:"video",ext:"mp4",size:"1.3 MB",id:"1vawBqLj8sqnXrplsBnGthb8jtB3HPS_Q"},
+  {section:"EN / Videos",name:"A Weekend in Paradise v1.mp4",type:"video",ext:"mp4",size:"2.4 MB",id:"1GUuRBONIgi9PvNuQijWDW8upvhfaOu32"},
+  {section:"EN / Videos",name:"AD 1 SET 1 OLD ADD MAN.mp4",type:"video",ext:"mp4",size:"5.8 MB",id:"1-T-vOMq0ZV87Mi49ZgZKuS8NK5bkCaOL"},
+  {section:"EN / Videos",name:"AD 5 SET 1 montage.mov",type:"video",ext:"mov",size:"49.6 MB",id:"199K8943X5DvfsWnAVtQ9M8AdzCJh2_KP"},
+  {section:"EN / Videos",name:"Boy slomo close up switch.mov",type:"video",ext:"mov",size:"101.3 MB",id:"1LuyqC3gJgKasNhVgwSzF9KZUyoGF7ahE"},
+  {section:"EN / Videos",name:"boy test content.mov",type:"video",ext:"mov",size:"194.7 MB",id:"1V6rDqbYzBCOp6udPX0g-jO5zsPzShfOi"},
+  {section:"EN / Videos",name:"Expert Care, Resort Serenity v1.mp4",type:"video",ext:"mp4",size:"649 KB",id:"1LOkipfH5KbXu8Jghl2uqJ09LWlzuLTvx"},
+  {section:"EN / Videos",name:"found this in cancun.mov",type:"video",ext:"mov",size:"63.6 MB",id:"1oohkiYXMge-4rvgWHjnqs1b6Uvr-vvIl"},
+  {section:"EN / Videos",name:"HOLIDAY SLIDE.mov",type:"video",ext:"mov",size:"46.5 MB",id:"1msLHQ43YospZ6RfPLAn3JNkVJQyzDSaV"},
+  {section:"EN / Videos",name:"I waited years.mov",type:"video",ext:"mov",size:"142.2 MB",id:"1BNS5y3SIQHBqrJHJ7Qf2IqPaMRPPX3HI"},
+  {section:"EN / Videos",name:"Is Your Smile Summer Ready v1.mp4",type:"video",ext:"mp4",size:"938 KB",id:"1lDgteUw3h5On_HgwwD02qhhm8Fo1faMy"},
+  {section:"EN / Videos",name:"man dont compete.mov",type:"video",ext:"mov",size:"65.9 MB",id:"1mzOfxAxKzQfYKYvAS0X3s_HHkpBxcH1h"},
+  {section:"EN / Videos",name:"MAN High quality quick change.mov",type:"video",ext:"mov",size:"33.5 MB",id:"15L8rHHr0mgj-F00EAij0chYdZzqucHJT"},
+  {section:"EN / Videos",name:"MAN Spin vid 2.mov",type:"video",ext:"mov",size:"75.7 MB",id:"1F5YaI6ihE_alQg-hhr-O5Ck3-J3JXYu_"},
+  {section:"EN / Videos",name:"man spinning pictures.mov",type:"video",ext:"mov",size:"75.8 MB",id:"1_18kVYUGoz2RPCwg-TIvo9lhQ49b9gfD"},
+  {section:"EN / Videos",name:"no text quick change.mov",type:"video",ext:"mov",size:"13.2 MB",id:"1MjT3hHV8G6CIvOcmYTBsTh_SNxe8Uq_H"},
+  {section:"EN / Videos",name:"not cheap high quality voice over.mov",type:"video",ext:"mov",size:"65.3 MB",id:"18wCLpNsPkl1mKT4Q1arkxQ1hHHiSSArm"},
+  {section:"EN / Videos",name:"old man waited years.mov",type:"video",ext:"mov",size:"80 MB",id:"1VHPP1B5myIf5mjxe1L2wFCxJfQ6eT_zy"},
+  {section:"EN / Videos",name:"only connect with us below text.mov",type:"video",ext:"mov",size:"75.7 MB",id:"1dTr-Z_7ABPa00bMu5yZMnDlxpRQ0qRS0"},
+  {section:"EN / Videos",name:"Precision Meets Pure Luxury v1.mp4",type:"video",ext:"mp4",size:"1 MB",id:"1Gakpm44Ld42ei5D6G7ppu-QOWPOT4aR7"},
+  {section:"EN / Videos",name:"slow mo boy.mov",type:"video",ext:"mov",size:"119.2 MB",id:"1HIoHfYZqlREqDng0ThwfRt8_MBoc4SLL"},
+  {section:"EN / Videos",name:"upgrade your smile.mov",type:"video",ext:"mov",size:"22.1 MB",id:"1jp6Kexq8BDcy0GxkLf9ggMI5Rp1j_DNC"},
+  {section:"ES / Spanish Content",name:"Spanish man results that leave people stunned.mov",type:"video",ext:"mov",size:"65 MB",id:"1V96qGKn5Vn5yesADIYeRTRgDCzC3uqK3"},
+  {section:"Raw / Contenido no editado",name:"2A10CC0B.jpg",type:"image",ext:"jpg",size:"398 KB",id:"1zKaqsPqdx7dow7ME2nJw5Q9ka-r9mSqp"},
+  {section:"Raw / Contenido no editado",name:"3c1f3253.jpg",type:"image",ext:"jpg",size:"139 KB",id:"1Q9BPTM9Vxj0lrD4xUgHg9UjRCJdz1bLV"},
+  {section:"Raw / Contenido no editado",name:"034ad4be.jpg",type:"image",ext:"jpg",size:"86 KB",id:"1DC4R_pLD-yLN3_TBKw-lY3FQyF_iEO4w"},
+  {section:"Raw / Contenido no editado",name:"46c5add8.MP4",type:"video",ext:"mp4",size:"4.4 MB",id:"1FOqdCKrO_1TQ_8MHQ6lm2eVoWgF-egYR"},
+  {section:"Raw / Contenido no editado",name:"66e9856c.jpg",type:"image",ext:"jpg",size:"162 KB",id:"12f8h9lAhN590B-w9rwAgiF0zUmEkd7Kc"},
+  {section:"Raw / Contenido no editado",name:"B661FD02.JPG",type:"image",ext:"jpg",size:"5.5 MB",id:"1GXRZjublZgOaMFFiaa4qr26n4L_-d0QB"},
+  {section:"Raw / Contenido no editado",name:"C4DAAFC5.JPG",type:"image",ext:"jpg",size:"2.6 MB",id:"1cDrFCSl0wGkUXz59JSvB1_oIKVpDcQZD"},
+  {section:"Raw / Contenido no editado",name:"C83A468B.JPG",type:"image",ext:"jpg",size:"6 MB",id:"1Wmg7PCEZyhnAKB38o-1Lzq3k3NsKJr1-"},
+  {section:"Raw / Contenido no editado",name:"CF915333.JPG",type:"image",ext:"jpg",size:"5.8 MB",id:"19oNx7CxGz-uvUyayUPUT6tNxPQLiI8Aa"},
+  {section:"Raw / Contenido no editado",name:"F57578F6.JPG",type:"image",ext:"jpg",size:"5.7 MB",id:"1xPFbYLWurwT2F1eHxnnp_YiYTzqir1_E"},
+  {section:"Raw / Contenido no editado",name:"fbe92e4f.jpg",type:"image",ext:"jpg",size:"85 KB",id:"1-0jK3NK4op6nrq61DhP20lM6HJyw9BNE"},
+  {section:"Raw / Contenido no editado",name:"IMG_0523.HEIC",type:"image",ext:"heic",size:"1 MB",id:"10O8ogWBBSce_mmBEbANRi5FX354VJiJG"},
+  {section:"Raw / Contenido no editado",name:"IMG_0524.MOV",type:"video",ext:"mov",size:"19.3 MB",id:"18uLFGKs2oVkXA2b0oGyx80_G4cjb5tal"},
+  {section:"Raw / Contenido no editado",name:"IMG_0525.MOV",type:"video",ext:"mov",size:"12 MB",id:"1PFLcgryAtsdC_gKewohPx6F2yah0iv4M"},
+  {section:"Raw / Contenido no editado",name:"IMG_0949.HEIC",type:"image",ext:"heic",size:"2.2 MB",id:"1kSo1-R4zOYWxIkuY2u0SYGT2s57Y5OwU"},
+  {section:"Raw / Contenido no editado",name:"IMG_0950.jpg",type:"image",ext:"jpg",size:"1019 KB",id:"1w8FelFB-7YFC2D5O1NN6u6n4tpi-cNx1"},
+  {section:"Raw / Contenido no editado",name:"IMG_0953.HEIC",type:"image",ext:"heic",size:"2 MB",id:"1fgUMxkpiWn4CXw-e0vnwaaYSVdE6WkYu"},
+  {section:"Raw / Contenido no editado",name:"IMG_0954.HEIC",type:"image",ext:"heic",size:"1.7 MB",id:"1-F09fgk-3Z7umHRB9TM8TkaXCEpamupI"},
+  {section:"Raw / Contenido no editado",name:"IMG_0955.MOV",type:"video",ext:"mov",size:"20.5 MB",id:"1HjTvowLSTFbfrch0y31ba-pvcYZDtd_0"},
+  {section:"Raw / Contenido no editado",name:"IMG_0956.jpg",type:"image",ext:"jpg",size:"494 KB",id:"1NkgVVzQ7he4X3uKHJUzSEpM2zl2i3Dug"},
+  {section:"Raw / Contenido no editado",name:"IMG_1343.MOV",type:"video",ext:"mov",size:"16.2 MB",id:"1_79ikM0tByHSn3KpWSOMzTl6LXjo8NpX"},
+  {section:"Raw / Contenido no editado",name:"IMG_1604.heic",type:"image",ext:"heic",size:"747 KB",id:"14my4fBZ55AOn1YFeHT-p8qZ9tCbCTwCp"},
+  {section:"Raw / Contenido no editado",name:"IMG_1615.MOV",type:"video",ext:"mov",size:"4.5 MB",id:"1HD8wmCGeJJxEfzZy1XqEwA90d4ux_J9c"},
+  {section:"Raw / Contenido no editado",name:"IMG_5660.jpg",type:"image",ext:"jpg",size:"2.4 MB",id:"1fBNWDCM2wZxTt-37v31a0lQlK4Y0igpe"},
+  {section:"Raw / Contenido no editado",name:"IMG_5668.jpg",type:"image",ext:"jpg",size:"2.5 MB",id:"1G60KVnQ00sAT9A_Yk3uiu1rr60WaeKTx"},
+  {section:"Raw / Contenido no editado",name:"IMG_5669.jpg",type:"image",ext:"jpg",size:"2.2 MB",id:"1cf0i_-a6HRv3mLoUM98mTszKTESLvcET"},
+  {section:"Raw / Contenido no editado",name:"IMG_5670.jpg",type:"image",ext:"jpg",size:"2.7 MB",id:"1Bs10drqRbBFnxqJ3cwaJPgCpBg8GR22e"},
+  {section:"Raw / Contenido no editado",name:"IMG_8025 2.jpg",type:"image",ext:"jpg",size:"589 KB",id:"16FTj3TY0RthzLqcftsqEpdccreoNQ73G"},
+  {section:"Raw / Contenido no editado",name:"IMG_8047 2.jpg",type:"image",ext:"jpg",size:"594 KB",id:"12w6gr0PCMjiyXrN69kAhkcxEgnA0YJQJ"},
+  {section:"Raw / Contenido no editado",name:"IMG_8050 2.MOV",type:"video",ext:"mov",size:"8.6 MB",id:"1O6HOB6jascYAURVThARndPjWA7HxTFGD"},
+  {section:"Raw / Contenido no editado",name:"IMG_8466.jpg",type:"image",ext:"jpg",size:"1.1 MB",id:"1gcKEbguFstvvu_ntWLzc_Z0Y9S7zlxoK"},
+  {section:"Raw / Contenido no editado",name:"IMG_8467.jpg",type:"image",ext:"jpg",size:"1.1 MB",id:"1hqg7sp7e6U0R4CZRIOdSEt35TAsHvfTj"},
+  {section:"Raw / Contenido no editado",name:"IMG_8481.jpg",type:"image",ext:"jpg",size:"1005 KB",id:"1UJ2G5XBpgmlr0Paa3naSxF7ayMebwu6_"},
+  {section:"Raw / Contenido no editado",name:"IMG_8530.heic",type:"image",ext:"heic",size:"2.1 MB",id:"12rajzKEvfVwUphJrQSp3LyyLwYAJLDJQ"},
+  {section:"Raw / Contenido no editado",name:"IMG_8531.MOV",type:"video",ext:"mov",size:"11.7 MB",id:"1qRzeSGSinyp_zqQSo8gxnvEZHpSlNRXK"},
+  {section:"Raw / Contenido no editado",name:"IMG_8536.heic",type:"image",ext:"heic",size:"2.2 MB",id:"1TXJ9NiWn9mKEUSXPsjDXhGjXKngFPIGB"},
+  {section:"Raw / Contenido no editado",name:"IMG_8537.MOV",type:"video",ext:"mov",size:"18.8 MB",id:"1lY-JvpMag5J0WW3-9JAlCRtnD8VloNl5"},
+  {section:"Raw / Contenido no editado",name:"IMG_8983.MOV",type:"video",ext:"mov",size:"4.4 MB",id:"1VkoG2Hxpkr6Qyzdsc6tAVFXtTymUVyQI"},
+  {section:"Raw / Testimonios en ingles",name:"IMG_0949.HEIC",type:"image",ext:"heic",size:"2.2 MB",id:"19or8G6jk5-2wJl_9aiaM51uK-30yZ3C8"},
+  {section:"Raw / Testimonios en ingles",name:"IMG_0950.jpg",type:"image",ext:"jpg",size:"1019 KB",id:"1EDeO18eoj916cchENB8x-1c9u5FA1zGy"},
+  {section:"Raw / Testimonios en ingles",name:"IMG_0953.HEIC",type:"image",ext:"heic",size:"2 MB",id:"1ZbgNXVdLtr4Cct8WnuznMGfkAJAHKYUY"},
+  {section:"Raw / Testimonios en ingles",name:"IMG_0954.HEIC",type:"image",ext:"heic",size:"1.7 MB",id:"1jAjz0h8tKvHcOS8Ds-Q5IwJKJm4f1JSz"},
+  {section:"Raw / Testimonios en ingles",name:"IMG_0955.MOV",type:"video",ext:"mov",size:"20.5 MB",id:"10g4X5LvjdNejFBMMLtch3NK1ws1TkHiY"},
+  {section:"Raw / Testimonios en ingles",name:"IMG_0956.jpg",type:"image",ext:"jpg",size:"494 KB",id:"19UUoCXErXNjsI-2rIt7630gt3_6OjAP4"},
+  {section:"Raw / Testimonios en ingles",name:"IMG_1343.MOV",type:"video",ext:"mov",size:"16.2 MB",id:"1GOaO00sAn5GArGxybbK6uV0LlAhz1Ud4"},
+  {section:"Raw / Testimonios en ingles",name:"IMG_8025 2.jpg",type:"image",ext:"jpg",size:"589 KB",id:"19-xg7tgIyunEZ2CFWYVWyPaPrFpn1m6d"},
+  {section:"Raw / Testimonios en ingles",name:"IMG_8025.jpg",type:"image",ext:"jpg",size:"589 KB",id:"1RbfvBSW3t-ypwkQW2rZofsOJROLiYNjY"},
+  {section:"Raw / Testimonios en ingles",name:"IMG_8047 2.jpg",type:"image",ext:"jpg",size:"594 KB",id:"1WOfSOuA33Goy4niiXG8Y-8_qzmoUMwqO"},
+  {section:"Raw / Testimonios en ingles",name:"IMG_8047.jpg",type:"image",ext:"jpg",size:"594 KB",id:"1SbYog_iz3yxu7c2DO5nR7gHmBcDnVkV3"},
+  {section:"Raw / Testimonios en ingles",name:"IMG_8050 2.MOV",type:"video",ext:"mov",size:"8.6 MB",id:"15cmHkX3aqvU_VNfT-wMXxCbm2wwWe_UV"},
+  {section:"Root Photos",name:"PHOTO-2026-03-15-12-58-52 2.jpg",type:"image",ext:"jpg",size:"unknown",id:"1w1MSBc2uSNFQRMD9YWjzr1BzW3qgbptA"},
+  {section:"Root Photos",name:"PHOTO-2026-03-15-12-58-52.jpg",type:"image",ext:"jpg",size:"unknown",id:"10ATB0PlkZduCo9p8t0iEkBhSw3vbRf87"},
+];
+
+const decisions = {};
+let currentFilter = 'all';
+let lightboxAssetId = null;
+
+function thumbUrl(id) {
+  return 'https://drive.google.com/thumbnail?id=' + id + '&sz=w600';
+}
+
+function previewUrl(id) {
+  return 'https://drive.google.com/file/d/' + id + '/preview';
+}
+
+function openUrl(id) {
+  return 'https://drive.google.com/file/d/' + id + '/view';
+}
+
+function getSections() {
+  const order = [];
+  const map = {};
+  ASSETS.forEach(function(a) {
+    if (!map[a.section]) { map[a.section] = []; order.push(a.section); }
+    map[a.section].push(a);
+  });
+  return order.map(function(s) { return { title: s, assets: map[s] }; });
+}
+
+function matchFilter(asset) {
+  if (currentFilter === 'all') return true;
+  if (currentFilter === 'image' || currentFilter === 'video') return asset.type === currentFilter;
+  var d = decisions[asset.id];
+  if (currentFilter === 'pending') return !d;
+  return d === currentFilter;
+}
+
+function escapeAttr(str) {
+  var div = document.createElement('div');
+  div.textContent = str;
+  return div.textContent.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+function render() {
+  var main = document.getElementById('main');
+  var sections = getSections();
+
+  // Clear existing content
+  while (main.firstChild) main.removeChild(main.firstChild);
+
+  sections.forEach(function(sec) {
+    var visible = sec.assets.filter(matchFilter);
+    if (visible.length === 0) return;
+
+    var sectionEl = document.createElement('div');
+    sectionEl.className = 'section';
+
+    var headerEl = document.createElement('div');
+    headerEl.className = 'section-header';
+
+    var titleEl = document.createElement('h2');
+    titleEl.className = 'section-title';
+    titleEl.textContent = sec.title;
+    headerEl.appendChild(titleEl);
+
+    var countEl = document.createElement('span');
+    countEl.className = 'section-count';
+    countEl.textContent = visible.length + ' asset' + (visible.length !== 1 ? 's' : '');
+    headerEl.appendChild(countEl);
+
+    sectionEl.appendChild(headerEl);
+
+    var gridEl = document.createElement('div');
+    gridEl.className = 'grid';
+
+    visible.forEach(function(a, i) {
+      var status = decisions[a.id] || '';
+      var card = document.createElement('div');
+      card.className = 'card' + (status ? ' ' + status : '');
+      card.style.setProperty('--i', i);
+      card.setAttribute('data-id', a.id);
+
+      if (status) {
+        var statusBadge = document.createElement('div');
+        statusBadge.className = 'card-status';
+        statusBadge.textContent = status === 'approved' ? 'Approved' : 'Denied';
+        card.appendChild(statusBadge);
+      }
+
+      var preview = document.createElement('div');
+      preview.className = 'card-preview';
+      preview.addEventListener('click', (function(assetId) {
+        return function() { openLightbox(assetId); };
+      })(a.id));
+
+      var img = document.createElement('img');
+      img.src = thumbUrl(a.id);
+      img.alt = a.name;
+      img.loading = 'lazy';
+      img.addEventListener('error', function() { this.style.display = 'none'; });
+      preview.appendChild(img);
+
+      if (a.type === 'video') {
+        var playDiv = document.createElement('div');
+        playDiv.className = 'play-icon';
+        var playSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        playSvg.setAttribute('viewBox', '0 0 24 24');
+        var poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+        poly.setAttribute('points', '8,5 20,12 8,19');
+        playSvg.appendChild(poly);
+        playDiv.appendChild(playSvg);
+        preview.appendChild(playDiv);
+      }
+
+      var badge = document.createElement('div');
+      badge.className = 'type-badge';
+      badge.textContent = a.ext.toUpperCase() + ' \u00B7 ' + a.size;
+      preview.appendChild(badge);
+
+      card.appendChild(preview);
+
+      var body = document.createElement('div');
+      body.className = 'card-body';
+
+      var nameEl = document.createElement('div');
+      nameEl.className = 'card-name';
+      nameEl.title = a.name;
+      nameEl.textContent = a.name;
+      body.appendChild(nameEl);
+
+      var meta = document.createElement('div');
+      meta.className = 'card-meta';
+      var typeSpan = document.createElement('span');
+      typeSpan.textContent = a.type === 'video' ? 'Video' : 'Image';
+      meta.appendChild(typeSpan);
+      var dotSpan = document.createElement('span');
+      dotSpan.textContent = '\u00B7';
+      meta.appendChild(dotSpan);
+      var link = document.createElement('a');
+      link.href = openUrl(a.id);
+      link.target = '_blank';
+      link.style.cssText = 'color:var(--accent);text-decoration:none;font-size:12px';
+      link.textContent = 'Open in Drive';
+      meta.appendChild(link);
+      body.appendChild(meta);
+
+      var actions = document.createElement('div');
+      actions.className = 'card-actions';
+
+      var approveBtn = document.createElement('button');
+      approveBtn.className = 'btn-approve';
+      approveBtn.textContent = 'Approve';
+      approveBtn.addEventListener('click', (function(assetId) {
+        return function() { setDecision(assetId, 'approved'); };
+      })(a.id));
+      actions.appendChild(approveBtn);
+
+      var denyBtn = document.createElement('button');
+      denyBtn.className = 'btn-deny';
+      denyBtn.textContent = 'Deny';
+      denyBtn.addEventListener('click', (function(assetId) {
+        return function() { setDecision(assetId, 'denied'); };
+      })(a.id));
+      actions.appendChild(denyBtn);
+
+      body.appendChild(actions);
+      card.appendChild(body);
+      gridEl.appendChild(card);
+    });
+
+    sectionEl.appendChild(gridEl);
+    main.appendChild(sectionEl);
+  });
+
+  updateStats();
+}
+
+function setDecision(id, status) {
+  if (decisions[id] === status) {
+    delete decisions[id];
+  } else {
+    decisions[id] = status;
+  }
+  saveState();
+  render();
+}
+
+function updateStats() {
+  var approved = 0, denied = 0, pending = 0;
+  ASSETS.forEach(function(a) {
+    if (decisions[a.id] === 'approved') approved++;
+    else if (decisions[a.id] === 'denied') denied++;
+    else pending++;
+  });
+  document.getElementById('stat-approved').textContent = approved;
+  document.getElementById('stat-denied').textContent = denied;
+  document.getElementById('stat-pending').textContent = pending;
+}
+
+function bulkAction(status) {
+  var visibleCards = document.querySelectorAll('.card[data-id]');
+  visibleCards.forEach(function(c) {
+    var id = c.getAttribute('data-id');
+    if (status === null) delete decisions[id];
+    else decisions[id] = status;
+  });
+  saveState();
+  render();
+}
+
+function openLightbox(id) {
+  lightboxAssetId = id;
+  var asset = ASSETS.find(function(a) { return a.id === id; });
+  var lb = document.getElementById('lightbox');
+  var content = document.getElementById('lightbox-content');
+  var nameEl = document.getElementById('lightbox-name');
+
+  nameEl.textContent = asset.name;
+
+  while (content.firstChild) content.removeChild(content.firstChild);
+
+  if (asset.type === 'video') {
+    var iframe = document.createElement('iframe');
+    iframe.src = previewUrl(id);
+    iframe.width = '854';
+    iframe.height = '480';
+    iframe.style.cssText = 'border:none;border-radius:12px;max-width:90vw;max-height:80vh';
+    iframe.setAttribute('allow', 'autoplay');
+    iframe.allowFullscreen = true;
+    content.appendChild(iframe);
+  } else {
+    var img = document.createElement('img');
+    img.src = thumbUrl(id);
+    img.alt = asset.name;
+    img.style.borderRadius = '12px';
+    content.appendChild(img);
+  }
+
+  lb.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+  var lb = document.getElementById('lightbox');
+  lb.classList.remove('open');
+  var content = document.getElementById('lightbox-content');
+  while (content.firstChild) content.removeChild(content.firstChild);
+  document.body.style.overflow = '';
+  lightboxAssetId = null;
+}
+
+function lightboxAction(status) {
+  if (lightboxAssetId) {
+    setDecision(lightboxAssetId, status);
+  }
+}
+
+document.getElementById('lightbox').addEventListener('click', function(e) {
+  if (e.target.id === 'lightbox') closeLightbox();
+});
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeLightbox();
+});
+
+document.querySelectorAll('.filter-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    currentFilter = btn.getAttribute('data-filter');
+    render();
+  });
+});
+
+function saveState() {
+  try { localStorage.setItem('dentalcancun-review', JSON.stringify(decisions)); } catch(e) {}
+}
+
+function loadState() {
+  try {
+    var saved = localStorage.getItem('dentalcancun-review');
+    if (saved) {
+      var parsed = JSON.parse(saved);
+      Object.keys(parsed).forEach(function(k) { decisions[k] = parsed[k]; });
+    }
+  } catch(e) {}
+}
+
+function exportDecisions() {
+  var approved = [], denied = [], pending = [];
+  ASSETS.forEach(function(a) {
+    var d = decisions[a.id];
+    var entry = '[' + a.section + '] ' + a.name + ' (' + a.size + ')';
+    if (d === 'approved') approved.push(entry);
+    else if (d === 'denied') denied.push(entry);
+    else pending.push(entry);
+  });
+
+  var text = 'DENTALCANCUN CONTENT REVIEW - ' + new Date().toLocaleDateString() + '\n';
+  text += '==================================================\n\n';
+  text += 'APPROVED (' + approved.length + '):\n' + (approved.map(function(a) { return '  + ' + a; }).join('\n') || '  (none)') + '\n\n';
+  text += 'DENIED (' + denied.length + '):\n' + (denied.map(function(a) { return '  - ' + a; }).join('\n') || '  (none)') + '\n\n';
+  text += 'PENDING (' + pending.length + '):\n' + (pending.map(function(a) { return '  ? ' + a; }).join('\n') || '  (none)') + '\n';
+
+  var blob = new Blob([text], { type: 'text/plain' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'content-review-' + new Date().toISOString().split('T')[0] + '.txt';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+loadState();
+render();
+</script>
+</body>
+</html>
