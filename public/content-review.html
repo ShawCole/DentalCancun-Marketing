@@ -234,6 +234,8 @@
   .card.approved { border-color: var(--approve-border); background: var(--approve-bg); }
   .card.denied { border-color: var(--deny-border); background: var(--deny-bg); opacity: 0.6; }
   .card.denied:hover { opacity: 1; }
+  .card.almost { border-color: #e8c840; box-shadow: 0 0 0 1px #e8c840, 0 0 16px rgba(232,200,64,0.15); }
+  .card.almost .card-status.almost-badge { background: rgba(232,200,64,0.15); color: #e8c840; border: 1px solid rgba(232,200,64,0.35); }
 
   .card-status {
     position: absolute;
@@ -564,6 +566,7 @@
   <button class="filter-btn" data-filter="pending">Pending</button>
   <button class="filter-btn" data-filter="approved">Approved</button>
   <button class="filter-btn" data-filter="denied">Denied</button>
+  <button class="filter-btn" data-filter="almost" style="border-color:rgba(232,200,64,0.35);color:#e8c840">Almost</button>
 </div>
 
 <main class="main" id="main"></main>
@@ -714,6 +717,140 @@ const ASSETS = [
   {section:"Root Photos",name:"PHOTO-2026-03-15-12-58-52.jpg",type:"image",ext:"jpg",size:"unknown",id:"10ATB0PlkZduCo9p8t0iEkBhSw3vbRf87"},
 ];
 
+// Pre-populated decisions from Shaw's review (2026-04-14)
+const INITIAL_DECISIONS = {
+  "1-aU5Zmwzva12hXD3dLV7tv08qqSkUPcw": "approved",
+  "1HF2qDhk8C-2PGrwlXBp0m4j6Hx7Hw1Qi": "approved",
+  "1OtwJkfMUf62cmzUvXg_uHTqtKWx7KgCI": "approved",
+  "1U0fxOf84kiUlvC3wEmLP0rpiMBCcwI7O": "approved",
+  "18saq0k2j5KgfZ5EwvuZS1fXL4vDCwd4n": "approved",
+  "1cTeXtVWgD19S87_kPttDwxej7urNqt4Y": "approved",
+  "1f9xuKS2-o-fO12pVlQJVIv_PWhQdZ2zy": "approved",
+  "15JaGA0w2mkdVKUWcc7POy8WpPXQN2sDf": "approved",
+  "1SFSDKpX3Ds6T4VKHfJyV2HfRLpb6Zl9o": "approved",
+  "1oohkiYXMge-4rvgWHjnqs1b6Uvr-vvIl": "approved",
+  "1MjT3hHV8G6CIvOcmYTBsTh_SNxe8Uq_H": "approved",
+  "1V96qGKn5Vn5yesADIYeRTRgDCzC3uqK3": "approved",
+  "1sNWJarn4j6ueSKSWqwNIesyk5YHTikGp": "denied",
+  "1WaPOi4U4irNh8wOyF419f0CDFz7Zwf5J": "denied",
+  "13kfcw9omFyiqnRyzlfRPTcoLh6DYDlt4": "denied",
+  "1ZgNkvE8aLae6IMJ1LlwOuT9QcTUyCIRN": "denied",
+  "16LIH1w1P3eyrcTOhnp1FhFr9cou8Pyq-": "denied",
+  "10G99Tq8jJPh9a_UwN-OrZ06K6jPt_gXP": "denied",
+  "13QonCdgVOaMsG5RJ9swNjlV2MubxdRka": "denied",
+  "1TENEh2ml_4aGxozEBRiwQwvWKn2fRd1E": "denied",
+  "1HP-Uu5RfxavloHp0kKaxJ2eu_DydfdNr": "denied",
+  "1SsWalSkbxPOcLJUGf6YTs-Wd3GSOGD9K": "denied",
+  "1VaN-LlFym2W5D75sbh1Ela7F44SAlL8K": "denied",
+  "11B7Qr4Cg21XxvPdaWtWJ3zw75pIxuQpN": "denied",
+  "1g-1-Y32zDDNlcLC8rf-FLM4YiYHlw4F_": "denied",
+  "1HSoCvcpUjC1n9HWt5s-FoidE7VXDiOjF": "denied",
+  "1j1b544GoFeh8di1fIJaTPbjJRFvzIYz8": "denied",
+  "1QaKUpaTYzKGNcE1ESffL6dQT_0NUS7Qh": "denied",
+  "1zDy8-QGRrfBuTcJRlS3Z3ohpy8E0ir7C": "denied",
+  "10pe2DRfLD58cq4iffFW-MVulAd8daX7U": "denied",
+  "1zflH8oMdNMYY5Qu4CcGUbm66MX1-bPOD": "denied",
+  "1kHKVPCFsxehWvEsKvVOqTeb3cP5uzwRl": "denied",
+  "1hJ-wJXD91ltmgqOH3EdsvpMv9K784IL3": "denied",
+  "1GS86N_SwO47SZuEd1MehdIgU0YONtqcY": "denied",
+  "1uT-3Ge6UacBbe5t-BGMxPh0I2pQOn7bj": "denied",
+  "1_-nSyc8VBN2xbXQK71lnWugRAapi6p6W": "denied",
+  "1_nCTVTdzr7Vei5bn_k4FdXSlBVCt7i0K": "denied",
+  "1oDyngg9JevIETYMu62qaY-l6MOcscea0": "denied",
+  "16pSy3WjIiCFI_7Z-Ie73RbbH27K6PpDL": "denied",
+  "1EQSZuRtOMCpziRTigQfCGzra_VGijWdF": "denied",
+  "1YHpE9V2vLYoqBZqfGTBmCQj5cj4y0js8": "denied",
+  "1CfbuuBqcl5UhgJctoaV-WWiKWm1lYr7t": "denied",
+  "1QgC9KFH31HXMQuKgCQ3Fq3Z6tZFRAvMS": "denied",
+  "1heBQId1Qvj74PQL1G7cRhI3jdzfaeCeL": "denied",
+  "1kWLvdU8_W6g6zNQCKXDpegTBfIVMKJjJ": "denied",
+  "10Y_YvOUjlZlRyOWdmCr-EM3fonTh3i2s": "denied",
+  "1vawBqLj8sqnXrplsBnGthb8jtB3HPS_Q": "denied",
+  "1GUuRBONIgi9PvNuQijWDW8upvhfaOu32": "denied",
+  "1-T-vOMq0ZV87Mi49ZgZKuS8NK5bkCaOL": "denied",
+  "199K8943X5DvfsWnAVtQ9M8AdzCJh2_KP": "denied",
+  "1LuyqC3gJgKasNhVgwSzF9KZUyoGF7ahE": "denied",
+  "1V6rDqbYzBCOp6udPX0g-jO5zsPzShfOi": "denied",
+  "1LOkipfH5KbXu8Jghl2uqJ09LWlzuLTvx": "denied",
+  "1msLHQ43YospZ6RfPLAn3JNkVJQyzDSaV": "denied",
+  "1BNS5y3SIQHBqrJHJ7Qf2IqPaMRPPX3HI": "denied",
+  "1lDgteUw3h5On_HgwwD02qhhm8Fo1faMy": "denied",
+  "1mzOfxAxKzQfYKYvAS0X3s_HHkpBxcH1h": "denied",
+  "15L8rHHr0mgj-F00EAij0chYdZzqucHJT": "denied",
+  "1F5YaI6ihE_alQg-hhr-O5Ck3-J3JXYu_": "denied",
+  "1_18kVYUGoz2RPCwg-TIvo9lhQ49b9gfD": "denied",
+  "18wCLpNsPkl1mKT4Q1arkxQ1hHHiSSArm": "denied",
+  "1VHPP1B5myIf5mjxe1L2wFCxJfQ6eT_zy": "denied",
+  "1dTr-Z_7ABPa00bMu5yZMnDlxpRQ0qRS0": "denied",
+  "1Gakpm44Ld42ei5D6G7ppu-QOWPOT4aR7": "denied",
+  "1HIoHfYZqlREqDng0ThwfRt8_MBoc4SLL": "denied",
+  "1jp6Kexq8BDcy0GxkLf9ggMI5Rp1j_DNC": "denied"
+};
+
+const INITIAL_COMMENTS = {
+  "1-aU5Zmwzva12hXD3dLV7tv08qqSkUPcw": "Needs text above and below",
+  "1f9xuKS2-o-fO12pVlQJVIv_PWhQdZ2zy": "Copy too clickbaity. But it might work.",
+  "15JaGA0w2mkdVKUWcc7POy8WpPXQN2sDf": "Real client? The low resolution helps if it is AI",
+  "1oohkiYXMge-4rvgWHjnqs1b6Uvr-vvIl": "This could work, but not for a high end audience.",
+  "1MjT3hHV8G6CIvOcmYTBsTh_SNxe8Uq_H": "Might work when we add text.",
+  "1sNWJarn4j6ueSKSWqwNIesyk5YHTikGp": "Smile not visible in before",
+  "1WaPOi4U4irNh8wOyF419f0CDFz7Zwf5J": "Confusing copy, I don't know what you're selling.",
+  "13kfcw9omFyiqnRyzlfRPTcoLh6DYDlt4": "Confusing copy, I don't know what you're selling.",
+  "1ZgNkvE8aLae6IMJ1LlwOuT9QcTUyCIRN": "No eyes,",
+  "16LIH1w1P3eyrcTOhnp1FhFr9cou8Pyq-": "Confusing copy indicates they're actively paying when they may just be considering. Also, \"for this?\" can be perceived negatively by american audiences.",
+  "10G99Tq8jJPh9a_UwN-OrZ06K6jPt_gXP": "Almost there, keep top text, bottom text replaced with \"Perfect Smile in 1 Visit\"",
+  "13QonCdgVOaMsG5RJ9swNjlV2MubxdRka": "Top photo too close, nothing we can do.",
+  "1TENEh2ml_4aGxozEBRiwQwvWKn2fRd1E": "Can't say real patients with an AI face.",
+  "1HP-Uu5RfxavloHp0kKaxJ2eu_DydfdNr": "Inconsistent smiles between top and bottom.",
+  "1SsWalSkbxPOcLJUGf6YTs-Wd3GSOGD9K": "No eyes is just creepy. Also, Confusing copy indicates they're actively paying when they may just be considering. Also, \"for this?\" can be perceived negatively by american audiences.",
+  "11B7Qr4Cg21XxvPdaWtWJ3zw75pIxuQpN": "Bad AI stubble.",
+  "1HSoCvcpUjC1n9HWt5s-FoidE7VXDiOjF": "Idk what that is in the middle. Do we actually have 3d scanning technology? Not ready for AdSpend",
+  "1j1b544GoFeh8di1fIJaTPbjJRFvzIYz8": "Wrong url.",
+  "1QaKUpaTYzKGNcE1ESffL6dQT_0NUS7Qh": "Accusatory, aggressive, assumptive, no value prop.",
+  "1zDy8-QGRrfBuTcJRlS3Z3ohpy8E0ir7C": "No",
+  "10pe2DRfLD58cq4iffFW-MVulAd8daX7U": "What are we selling here?",
+  "1zflH8oMdNMYY5Qu4CcGUbm66MX1-bPOD": "Remove the url, it's incorrect.",
+  "1kHKVPCFsxehWvEsKvVOqTeb3cP5uzwRl": "What are we selling?",
+  "1hJ-wJXD91ltmgqOH3EdsvpMv9K784IL3": "What are we selling?",
+  "1GS86N_SwO47SZuEd1MehdIgU0YONtqcY": "What are we selling?",
+  "1uT-3Ge6UacBbe5t-BGMxPh0I2pQOn7bj": "Remove the url, it's incorrect.",
+  "1_-nSyc8VBN2xbXQK71lnWugRAapi6p6W": "What are we selling?",
+  "1_nCTVTdzr7Vei5bn_k4FdXSlBVCt7i0K": "Maybe just \"Everything changes when you fix your smile\"",
+  "1oDyngg9JevIETYMu62qaY-l6MOcscea0": "Accusatory, aggressive, assumptive, no value prop.",
+  "16pSy3WjIiCFI_7Z-Ie73RbbH27K6PpDL": "Accusatory, aggressive, assumptive, no value prop.",
+  "1EQSZuRtOMCpziRTigQfCGzra_VGijWdF": "What are we selling? Could work if there was a smile or a svg of a smile, or maybe even a smile emoji",
+  "1YHpE9V2vLYoqBZqfGTBmCQj5cj4y0js8": "Add question marks after each of the top words. Replace \"It's not subtle\" with \"Let's fix that\"",
+  "1CfbuuBqcl5UhgJctoaV-WWiKWm1lYr7t": "What are we selling here?",
+  "1QgC9KFH31HXMQuKgCQ3Fq3Z6tZFRAvMS": "Aggressive. What are we selling?",
+  "1heBQId1Qvj74PQL1G7cRhI3jdzfaeCeL": "This is about your teeth.",
+  "1kWLvdU8_W6g6zNQCKXDpegTBfIVMKJjJ": "This is about your teeth.",
+  "10Y_YvOUjlZlRyOWdmCr-EM3fonTh3i2s": "Aggressive, what are we selling?",
+  "1vawBqLj8sqnXrplsBnGthb8jtB3HPS_Q": "Having \"US\" and \"Standard\" on different lines obscures the meaning. Duplicate text on top and bottom.",
+  "1GUuRBONIgi9PvNuQijWDW8upvhfaOu32": "Let's use the copy at the top of https://www.dentalcancun.com/lp/smile-design",
+  "1-T-vOMq0ZV87Mi49ZgZKuS8NK5bkCaOL": "Text unreadable in second scene. I know this was a rework of an Abe-ad, but I'm not sure we can use this.",
+  "199K8943X5DvfsWnAVtQ9M8AdzCJh2_KP": "Messy editing, we don't need the word \"client\" flying around. Over-exposed. Why on earth do we have the words \"Dental Golf Holiday Luxury\" in one of the text boxes?",
+  "1LuyqC3gJgKasNhVgwSzF9KZUyoGF7ahE": "These caption animations are cheesy. The AI voice is off-putting. First scene goes on for too long. If we're going for the tiktok-esque editing we might as well use brainrot sound-effects.",
+  "1V6rDqbYzBCOp6udPX0g-jO5zsPzShfOi": "We were doing so well until the last still frame of the AI generated dental cancun building on the beach...",
+  "1LOkipfH5KbXu8Jghl2uqJ09LWlzuLTvx": "Can't read smaller text. What are we selling? No smile. Even the woman isn't smiling.",
+  "1msLHQ43YospZ6RfPLAn3JNkVJQyzDSaV": "Can we add multiple happy clients instead of just a still frame of one that goes on for too long?",
+  "1BNS5y3SIQHBqrJHJ7Qf2IqPaMRPPX3HI": "AI voice needs to be redone for the word \"plus\" and the word \"hours\"",
+  "1lDgteUw3h5On_HgwwD02qhhm8Fo1faMy": "No smile in the video.",
+  "1mzOfxAxKzQfYKYvAS0X3s_HHkpBxcH1h": "Cheesy, lazy editing.",
+  "15L8rHHr0mgj-F00EAij0chYdZzqucHJT": "Remove black and white filter.",
+  "1F5YaI6ihE_alQg-hhr-O5Ck3-J3JXYu_": "Why does he start sideways?",
+  "1_18kVYUGoz2RPCwg-TIvo9lhQ49b9gfD": "Why are we spinning?",
+  "18wCLpNsPkl1mKT4Q1arkxQ1hHHiSSArm": "The AI literally says \"Find out more bellow\" like \"bellow\" instead of \"below\"",
+  "1VHPP1B5myIf5mjxe1L2wFCxJfQ6eT_zy": "AI voice needs to be redone for the word \"plus\" and the word \"hours\"",
+  "1dTr-Z_7ABPa00bMu5yZMnDlxpRQ0qRS0": "Why does he start sideways?",
+  "1Gakpm44Ld42ei5D6G7ppu-QOWPOT4aR7": "4 seconds before any text appears on screen. Prospect already swiped away.",
+  "1HIoHfYZqlREqDng0ThwfRt8_MBoc4SLL": "Works until the logo appears. The animation for the logo fly in was in landscape, meaning the top and bottom are cut off.",
+  "1jp6Kexq8BDcy0GxkLf9ggMI5Rp1j_DNC": "First 2 seconds is just a nose.",
+  "1N_dXie9VfidntH_dd_-Pwhd39prQHhL8": "Where are his eyes... (Uncanny valley)",
+  "1NQNgZCBqdeg1RECZ7PSVHfJKEHkVavLZ": "Almost there, keep top text, bottom text replaced with \"Perfect Smile in 1 Visit\"",
+  "1KLfqjlqvtSXechut9h9UWDR4ni_W6Qs_": "Maybe. Though angles are inconsistent, we could work with this. Needs text on top and bottom.",
+  "1F8ea7kX5NHfIkZE8C4qG91r1t5Bx7UTM": "Almost there, just needs: 1. Value prop with small text below \"Get your perfect smile in a weekend, and 2. the gemini logo removed in the bottom right,"
+};
+
 const decisions = {};
 const comments = {};
 let currentFilter = 'all';
@@ -742,9 +879,14 @@ function getSections() {
   return order.map(function(s) { return { title: s, assets: map[s] }; });
 }
 
+function isAlmost(id) {
+  return comments[id] && comments[id].toLowerCase().indexOf('almost') !== -1;
+}
+
 function matchFilter(asset) {
   if (currentFilter === 'all') return true;
   if (currentFilter === 'image' || currentFilter === 'video') return asset.type === currentFilter;
+  if (currentFilter === 'almost') return isAlmost(asset.id);
   var d = decisions[asset.id];
   if (currentFilter === 'pending') return !d;
   return d === currentFilter;
@@ -790,12 +932,18 @@ function render() {
 
     visible.forEach(function(a, i) {
       var status = decisions[a.id] || '';
+      var almostFlag = isAlmost(a.id);
       var card = document.createElement('div');
-      card.className = 'card' + (status ? ' ' + status : '');
+      card.className = 'card' + (status ? ' ' + status : '') + (almostFlag ? ' almost' : '');
       card.style.setProperty('--i', i);
       card.setAttribute('data-id', a.id);
 
-      if (status) {
+      if (almostFlag) {
+        var almostBadge = document.createElement('div');
+        almostBadge.className = 'card-status almost-badge';
+        almostBadge.textContent = 'Almost';
+        card.appendChild(almostBadge);
+      } else if (status) {
         var statusBadge = document.createElement('div');
         statusBadge.className = 'card-status';
         statusBadge.textContent = status === 'approved' ? 'Approved' : 'Denied';
@@ -1028,6 +1176,10 @@ function saveState() {
 }
 
 function loadState() {
+  // Seed from hardcoded initial state first
+  Object.keys(INITIAL_DECISIONS).forEach(function(k) { decisions[k] = INITIAL_DECISIONS[k]; });
+  Object.keys(INITIAL_COMMENTS).forEach(function(k) { comments[k] = INITIAL_COMMENTS[k]; });
+  // Then overlay any localStorage changes (user may have updated since)
   try {
     var saved = localStorage.getItem('dentalcancun-review');
     if (saved) {
